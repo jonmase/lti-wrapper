@@ -1,0 +1,10 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+/* Remove default margin-bottom on buttons set by base.css */
+button, .button {
+    margin-bottom: 0px;
+}
