@@ -31,14 +31,6 @@ You will need to create a lti_consumer record in order to create the first LTI
 link to the app. Necessary fields to complete at consumer_key, name, secret, 
 set enabled to 1 and protected to 0.
 
-IMPORTANT: There is a bug in LTI_Tool_Provider.php v2.5.00 (the version loaded 
-by composer) which will cause an error on the first launch due to a DB 
-constraint failure. Stephen Vickers has now released v2.5.01 which fixes this, 
-but the composer/packagist mirror package has not been updated, so it is 
-necessary to replace the vendor/adurolms/lti-tool-provider files with the 
-v2.5.01 ones from 
-[OSCELOT](http://projects.oscelot.org/gf/project/php-basic-lti/frs/).
-
 In src\Controller\LtiConsumerController.php, set up the redirect logic to 
 redirect the user once the LTI launch has been verified and the user 
 registered. This may involve looking up whether there is already an item 
