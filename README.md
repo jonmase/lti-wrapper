@@ -1,9 +1,4 @@
-# CakePHP, LTI, ReactJS and Material UI Skeleton App
-
-A skeleton for creating [LTI-enabled](http://www.spvsoftwareproducts.com/php/lti_tool_provider/) 
-applications with [CakePHP](http://cakephp.org) 3.x, 
-combined with [React](https://facebook.github.io/react) 
-and [Material-UI](http://www.material-ui.com/)
+# LTI Wrapper for Neurosim - Neurosimulator by Sanjay Manohar
 
 ## PHP Installation
 
@@ -16,46 +11,19 @@ composer install
 
 Or, if Composer is only installed locally run `php composer.phar install`.
 
-## Configuration
-
-Read and edit `config/app.php` and setup the 'Datasources' and any other
-configuration relevant for your application.
-
-###Database setup
-
-Run the SQL in DB_LTI.sql to create the necessary tables for the SQL setup. 
-
-##LTI Setup
-
-You will need to create a lti_consumer record in order to create the first LTI 
-link to the app. Necessary fields to complete at consumer_key, name, secret, 
-set enabled to 1 and protected to 0.
-
-In src\Controller\LtiConsumerController.php, set up the redirect logic to 
-redirect the user once the LTI launch has been verified and the user 
-registered. This may involve looking up whether there is already an item 
-associated with this LTI link, if there is sending the user to that item, and 
-if there isn't, allowing them to associate an item.
-
-Launch url will be (localhost\app)\launch (see config\routes.php)
-
 ##Javascript Installation
 
+###Install Dependencies
 In the webroot/js directory, run `npm install` to install dependencies.
 The dependencies are listed in package.json.
 
+###Gulp
 The, to build the js bundle, run `gulp`. The gulp build steps are defined in 
 gulpfile.js
 
 gulp is set to watch the js directories for any changes and will automatically
 run the build steps and reload the browser using livereload when changes are 
 detected. 
-
-###Topbar
-
-A topbar (webroot/js/src/topbar.jsx) is included as an example of setting up a 
-Material UI component to work with browserify, etc, as this differs slightly 
-from the Material UI docs.
 
 ###LiveReload
 
