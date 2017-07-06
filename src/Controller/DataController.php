@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Network\Exception\InternalErrorException;
 
 /**
  * Data Controller
@@ -26,6 +27,7 @@ class DataController extends AppController
         //pr($tool);
         
         $data = $this->Data->getLatestUserData($tool)->toArray();
+        $data['data'] = json_decode($data['data']);
         //pr($data);
 
         $this->set('data', $data);
@@ -39,7 +41,7 @@ class DataController extends AppController
      */
     public function save()
     {
-        //$this->request->allowMethod(['post']);
+        $this->request->allowMethod(['post']);
         $this->viewBuilder()->layout('ajax');
 
         $tool = $this->SessionData->getLtiTool();
@@ -49,7 +51,8 @@ class DataController extends AppController
         $dataEntity = $this->Data->getLatestUserData($tool);
         $existingDataArray = $dataEntity->toArray();
         
-        $data = 'some json: ' . time();//$this->request->data['data'];
+        //pr($this->request->data); exit;
+        $data = json_encode($this->request->data);
         
         //If there is existing data, backup it up and then patch with new data
         if(!empty($dataEntity)) {
@@ -58,7 +61,8 @@ class DataController extends AppController
             $existingDataArray['revision_parent'] = $existingId;  //Set the revision parent to the existing ID
             $dataToSave[] = $this->Data->newEntity($existingDataArray);   //Hydrate the old data
             
-            $dataToSave[] = $this->Data->patchEntity($dataEntity, ['data' => $data]); 
+            $dataEntity->data = $data;
+            $dataToSave[] = $dataEntity; 
         }
         //Otherwise, just save new data
         else {
@@ -71,12 +75,12 @@ class DataController extends AppController
         //pr($dataToSave); exit;
         
         if ($this->Data->saveMany($dataToSave)) {
-            $message = 'success';
+            $message = 'success: ' . time();
+            $this->set('message', $message);
+            $this->set('_serialize', ['message']);
         } else {
-            $message = 'error';
+            throw new InternalErrorException(__('Error saving data'));
         }
-        $this->set('message', $message);
-        $this->set('_serialize', ['message']);
     }
 
 }
