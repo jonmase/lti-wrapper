@@ -25,16 +25,7 @@ class DataController extends AppController
         //pr($currentUserId);
         //pr($tool);
         
-        $dataQuery = $this->Data->find('all', [
-            'conditions' => [
-                'lti_consumer_key' => $tool->consumer->getKey(),
-                'lti_context_id' => $tool->context->getId(),
-                'lti_user_id' => $tool->user->getId(),
-                'revision_parent' => 0,
-            ]
-        ]);
-        
-        $data = $dataQuery->toArray();
+        $data = $this->Data->getLatestUserData($tool)->toArray();
         //pr($data);
 
         $this->set('data', $data);
@@ -53,24 +44,37 @@ class DataController extends AppController
 
         $tool = $this->SessionData->getLtiTool();
 
-        $dataArray = [
-            'lti_consumer_key' => $tool->consumer->getKey(),
-            'lti_context_id' => $tool->context->getId(),
-            'lti_user_id' => $tool->user->getId(),
-            'data' => 'some json',//$this->request->data['data'],
-            'reivision_parent' => 0,
-        ];
+        $dataToSave = [];
         
+        $dataEntity = $this->Data->getLatestUserData($tool);
+        $existingDataArray = $dataEntity->toArray();
         
-        $data = $this->Data->newEntity($dataArray);
-        pr($data); 
+        $data = 'some json: ' . time();//$this->request->data['data'];
         
-        if ($this->Data->save($data)) {
+        //If there is existing data, backup it up and then patch with new data
+        if(!empty($dataEntity)) {
+            $existingId = $existingDataArray['id'];   //Get the ID of the existing record
+            unset($existingDataArray['id']);  //Unset the ID for the old data
+            $existingDataArray['revision_parent'] = $existingId;  //Set the revision parent to the existing ID
+            $dataToSave[] = $this->Data->newEntity($existingDataArray);   //Hydrate the old data
+            
+            $dataToSave[] = $this->Data->patchEntity($dataEntity, ['data' => $data]); 
+        }
+        //Otherwise, just save new data
+        else {
+            $newDataArray = $this->Data->getBasicConditions($tool);  //Get the LTI values
+            $newDataArray['revision_parent'] = 0;    //No revision parent
+            $newDataArray['data'] = $data;   //Add the data
+            $dataToSave[] = $this->Data->newEntity($newDataArray);   //Hydrate the data
+        }
+        
+        //pr($dataToSave); exit;
+        
+        if ($this->Data->saveMany($dataToSave)) {
             $message = 'success';
         } else {
             $message = 'error';
         }
-        pr($message); exit;
         $this->set('message', $message);
         $this->set('_serialize', ['message']);
     }

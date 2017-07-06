@@ -83,4 +83,35 @@ class DataTable extends Table
         $rules->add($rules->existsIn(['lti_consumer_key', 'lti_context_id', 'lti_user_id'], 'LtiUser'));
         return $rules;
     }
+    
+    public function getBasicConditions($tool = null) {
+        if(!$tool) {
+            return [];
+        }
+        
+        $conditions = [
+            'lti_consumer_key' => $tool->consumer->getKey(),
+            'lti_context_id' => $tool->context->getId(),
+            'lti_user_id' => $tool->user->getId(),
+        ];
+
+        return $conditions;
+    }
+    
+    public function getLatestUserData($tool = null) {
+        if(!$tool) {
+            return [];
+        }
+        
+        $conditions = $this->getBasicConditions($tool);
+        $conditions['revision_parent'] = 0;
+
+        $dataQuery = $this->find('all', [
+            'conditions' => $conditions,
+        ]);
+        
+        $data = $dataQuery->first();
+        
+        return $data;
+    }
 }
