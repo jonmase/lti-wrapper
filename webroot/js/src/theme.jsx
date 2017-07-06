@@ -1,25 +1,29 @@
-var Colors = require('material-ui/lib/styles/colors');
-var ColorManipulator = require('material-ui/lib/utils/color-manipulator');
-var Spacing = require('material-ui/lib/styles/spacing');
-var zIndex = require('material-ui/lib/styles/zIndex');
+var getMuiTheme = require('material-ui/styles/getMuiTheme');
+var {indigoA100, indigoA200, indigo500, indigo700, lightBlack, lightBlue300} = require('material-ui/styles/colors');
 
-//http://www.material-ui.com/#/customization/colors
-module.exports = {
-  spacing: Spacing,
-  zIndex: zIndex,
+//import getMuiTheme from 'material-ui/styles/getMuiTheme';
+//import {indigoA100, indigoA200, indigo500, indigo700, lightBlack, lightBlue300} from 'material-ui/styles/colors';
+
+module.exports = getMuiTheme({
   fontFamily: 'Roboto, sans-serif',
   palette: {
-    primary1Color: Colors.indigo500,
-    primary2Color: Colors.indigo700,
-    primary3Color: Colors.lightBlack,
-    accent1Color: Colors.tealA200,
-    accent2Color: Colors.grey100,
-    accent3Color: Colors.grey500,
-    textColor: Colors.darkBlack,
-    alternateTextColor: Colors.white,
-    canvasColor: Colors.white,
-    borderColor: Colors.grey300,
-    disabledColor: ColorManipulator.fade(Colors.darkBlack, 0.3),
-    pickerHeaderColor: Colors.indigo500,
+    primary1Color: indigo500,
+    primary2Color: indigo700,
+    primary3Color: lightBlack,
+    //accent1Color: indigoA400,
+    accent1Color: indigoA100,
+    pickerHeaderColor: indigo500,
   }
-}
+});
+
+/*export default {
+  fontFamily: 'Roboto, sans-serif',
+  palette: {
+    primary1Color: indigo500,
+    primary2Color: indigo700,
+    primary3Color: lightBlack,
+    //accent1Color: indigoA400,
+    accent1Color: indigoA100,
+    pickerHeaderColor: indigo500,
+  }
+};*/

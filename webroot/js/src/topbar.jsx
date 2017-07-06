@@ -1,51 +1,64 @@
 var React = require('react');
-var AppBar = require('material-ui/lib/app-bar');
-var IconMenu = require('material-ui/lib/menus/icon-menu');
-var MenuItem = require('material-ui/lib/menus/menu-item');
-var IconButton = require('material-ui/lib/icon-button');
-var FontIcon = require('material-ui/lib/font-icon');
+var AppBar = require('material-ui/AppBar');
+var MenuDrawer = require('./menu-drawer.jsx');
 
-var GetMuiTheme = require('material-ui/lib/styles/getMuiTheme');
-var ChooserTheme = require('./theme.jsx');
+//import React from 'react';
+//import AppBar from 'material-ui/AppBar';
+//import MenuDrawer from './menu-drawer.jsx';
 
-const styles = {
-  subtitle: {
-    'fontSize': '80%',
-    'marginLeft': '10px',
-  },
-};
-
-const TopBar = React.createClass({
-    //the key passed through context must be called "muiTheme"
-    childContextTypes : {
-        muiTheme: React.PropTypes.object,
-    },
-
-    getChildContext() {
+var TopBar = React.createClass({
+    getInitialState: function () {
         return {
-            muiTheme: GetMuiTheme(ChooserTheme),
+            menuDrawerOpen: false,
         };
     },
-
-    render () {
+    
+    handleMenuDrawerToggle: function() {
+        this.setState({menuDrawerOpen: !this.state.menuDrawerOpen});
+    },
+    
+    handleMenuDrawerRequestChange: function(open) {
+        this.setState({menuDrawerOpen: open});
+    },
+    
+    render: function() {
+        var showLeftIcon = true;
+        var showMenu = false;
+        if(this.props.iconLeft === 'menu') {
+            showMenu = true;
+        }
+        else if(this.props.iconLeft === null) {
+            showLeftIcon = false;
+        }
+        
         return (
-            <AppBar
-                title={<span>Project<span style={styles.subtitle}>Subtitle</span></span>}
-                iconElementLeft={<IconButton><FontIcon className="material-icons">menu</FontIcon></IconButton>}
-                iconElementRight={
-                    <IconMenu
-                        iconButtonElement={ <IconButton><FontIcon className="material-icons">more_vert</FontIcon></IconButton> }
-                        targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                        anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
-                    >
-                        <MenuItem primaryText="Refresh" />
-                        <MenuItem primaryText="Help" />
-                        <MenuItem primaryText="Sign out" />
-                    </IconMenu>
+            <div>
+                <AppBar
+                    title={this.props.title}
+                    showMenuIconButton={showLeftIcon}
+                    onLeftIconButtonTouchTap={showMenu?this.handleMenuDrawerToggle:function() {return false; }}
+                    iconElementLeft={(showMenu)?null:this.props.iconLeft}
+                    iconElementRight={this.props.iconRight}
+                    style={{position: 'fixed'}}
+                    zDepth={(typeof(this.props.zDepth) !== "undefined")?this.props.zDepth:2}
+                />
+                {showMenu && 
+                    <MenuDrawer
+                        handlers={{
+                            requestChange: this.handleMenuDrawerRequestChange,
+                            toggle: this.handleMenuDrawerToggle,
+                        }}
+                        items={this.props.menuItems}
+                        open={this.state.menuDrawerOpen}
+                        title={this.props.menuTitle} 
+                        titleUrl={this.props.menuTitleUrl} 
+                    />
                 }
-            />
+            </div>
         );
     }
 });
+
+
 
 module.exports = TopBar;

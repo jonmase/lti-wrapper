@@ -1,8 +1,15 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var injectTapEventPlugin = require('react-tap-event-plugin');
-var TopBar = require('./topbar.jsx');
+var Page = require('./page.jsx');
 
 injectTapEventPlugin();
 
-ReactDOM.render(<TopBar />, document.getElementById('topbar'));
+ReactDOM.render(
+    <Page 
+        title={"App Title"} 
+        titleUrl={"/"} 
+        items={null} 
+    />, 
+    document.getElementById('index')
+);
