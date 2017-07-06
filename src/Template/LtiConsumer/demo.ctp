@@ -1,7 +1,20 @@
-<h1 class="page-title">Demo page</h1>
-<div class="row">
-    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">Flexbox column XS12 - SM6 - MD4 - LG3</div>
-    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">Flexbox column XS12 - SM6 - MD4 - LG3</div>
-    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">Flexbox column XS12 - SM6 - MD4 - LG3</div>
-    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">Flexbox column XS12 - SM6 - MD4 - LG3</div>
+<h1 class="page-title">Demo App</h1>
+<div>
+    This app will just get and set JSON.
 </div>
+<script>
+    $(document).ready(function() {
+            console.log("ready");
+            
+            /*var url = '/
+            $.ajax({
+                type:    "POST",
+                url:     my.score_server,
+                contentType:"application/json",
+                data:    JSON.stringify(my.scores),
+                error:   function(xhr,opt,er){
+                    console.log("unable to send scores to server: "+er);
+                }
+            });*/
+    });
+</script>

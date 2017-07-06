@@ -1,19 +1,19 @@
 <?php
 namespace App\Model\Table;
 
-use App\Model\Entity\LtiUser;
+use App\Model\Entity\Data;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * LtiUser Model
+ * Data Model
  *
- * @property \Cake\ORM\Association\BelongsTo $LtiContext
- * @property \Cake\ORM\Association\HasOne $LtiUserUsers
+ * @property \Cake\ORM\Association\BelongsTo $LtiUser
+ * @property \Cake\ORM\Association\BelongsTo $LtiUserUsers
  */
-class LtiUserTable extends Table
+class DataTable extends Table
 {
 
     /**
@@ -26,22 +26,14 @@ class LtiUserTable extends Table
     {
         parent::initialize($config);
 
-        $this->table('lti_user');
-        $this->displayField('consumer_key');
-        $this->primaryKey(['consumer_key', 'context_id', 'user_id']);
+        $this->table('data');
+        $this->displayField('id');
+        $this->primaryKey('id');
 
         $this->addBehavior('Timestamp');
 
-        $this->belongsTo('LtiContext', [
-            'foreignKey' => ['consumer_key', 'context_id'],
-        ]);
-        $this->hasOne('LtiUserUsers', [
+        $this->belongsTo('LtiUser', [
             'foreignKey' => ['lti_consumer_key', 'lti_context_id', 'lti_user_id'],
-            'joinType' => 'INNER'
-        ]);
-        $this->hasMany('Data', [
-            'foreignKey' => ['lti_consumer_key', 'lti_context_id', 'lti_user_id'],
-            'joinType' => 'INNER'
         ]);
     }
 
@@ -54,11 +46,27 @@ class LtiUserTable extends Table
     public function validationDefault(Validator $validator)
     {
         $validator
-            ->allowEmpty('consumer_key', 'create');
+            ->integer('id')
+            ->allowEmpty('id', 'create');
 
         $validator
-            ->requirePresence('lti_result_sourcedid', 'create')
-            ->notEmpty('lti_result_sourcedid');
+            ->requirePresence('lti_consumer_key', 'create')
+            ->notEmpty('lti_consumer_key');
+
+        $validator
+            ->requirePresence('lti_context_id', 'create')
+            ->notEmpty('lti_context_id');
+
+        $validator
+            ->requirePresence('lti_user_id', 'create')
+            ->notEmpty('lti_user_id');
+
+        $validator
+            ->allowEmpty('data');
+
+        $validator
+            ->integer('revision_parent')
+            ->allowEmpty('revision_parent');
 
         return $validator;
     }
@@ -72,7 +80,7 @@ class LtiUserTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['consumer_key', 'context_id'], 'LtiContext'));
+        $rules->add($rules->existsIn(['lti_consumer_key', 'lti_context_id', 'lti_user_id'], 'LtiUser'));
         return $rules;
     }
 }

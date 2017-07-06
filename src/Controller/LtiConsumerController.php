@@ -5,6 +5,7 @@ use App\Controller\AppController;
 use Cake\Datasource\ConnectionManager;
 use Cake\Network\Exception\ForbiddenException;
 use Cake\Network\Exception\InternalErrorException;
+use Cake\Event\Event;
 
 /**
  * LtiConsumer Controller
@@ -13,6 +14,11 @@ use Cake\Network\Exception\InternalErrorException;
  */
 class LtiConsumerController extends AppController
 {
+	public function beforeFilter(Event $event) {
+        parent::beforeFilter($event);
+		$this->Auth->allow('launch');
+	}
+	
     /**
      * Launch method
      *
@@ -25,6 +31,7 @@ class LtiConsumerController extends AppController
      * @throws \Cake\Network\Exception\ForbiddenException When choice is not found and user does not have permission to configure it.
      */
     public function launch() {
+        $this->request->allowMethod(['post']);
         $this->autoRender = false;
         if(isset($_REQUEST['lti_message_type']) && isset($_REQUEST['oauth_consumer_key'])) {	//Is this an LTI request
             //lis_result_sourcedid is not sent by WebLearn, but is required for the LTI_Tool_Provider to save the user
@@ -32,7 +39,7 @@ class LtiConsumerController extends AppController
             if(!isset($_POST['lis_result_sourcedid']) && isset($_POST['lis_person_sourcedid'])) {
                 $_POST['lis_result_sourcedid'] = $_POST['lis_person_sourcedid'];
             }
-			require_once(ROOT . DS . 'vendor' . DS  . 'adurolms' . DS  . 'lti-tool-provider' . DS . 'LTI_Tool_Provider.php');	//Load the LTI class
+			require_once(ROOT . DS . 'vendor' . DS  . 'lti-tool-provider' . DS . 'LTI_Tool_Provider.php');	//Load the LTI class
             
             //Connect to the database using the LTI data connector (not the Cake way!)
             //TODO: Could we do this in a more Cakey way?
@@ -60,7 +67,9 @@ class LtiConsumerController extends AppController
                 $session->write('tool', $tool);
                 
                 //Register the user
-                if($this->LtiConsumer->LtiContext->LtiUser->LtiUserUsers->Users->register($tool)) {
+                if($user = $this->LtiConsumer->LtiContext->LtiUser->LtiUserUsers->Users->register($tool)) {
+                    //Log the user in
+                    $this->Auth->setUser($user->toArray());
                     
                     //ADD REDIRECTION LOGIC HERE
                     //For demo purposes, just redirect to the demo page
@@ -82,6 +91,7 @@ class LtiConsumerController extends AppController
     }
     
     public function demo() {
+        $this->viewBuilder()->layout('jquery');
         //Demo action that just shows a page with "Demo page" text
     }
 }
